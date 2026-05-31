@@ -1,0 +1,35 @@
+[
+  {
+    "scene_id": "test_chair",
+    "mapping": { "A": "ours", "B": "sc" },
+    "outputs_a": ["https://picsum.photos/seed/chair_ours_a/500/400"],
+    "outputs_b": ["https://picsum.photos/seed/chair_sc_b/500/400"],
+    "ref_a": "https://picsum.photos/seed/velvet_red/160/160",
+    "ref_b": "https://picsum.photos/seed/oak_wood/160/160",
+    "prompt": "A wooden chair with red velvet seat and oak legs",
+    "ref_a_label": "seat (red velvet)",
+    "ref_b_label": "legs (oak wood)"
+  },
+  {
+    "scene_id": "test_table",
+    "mapping": { "A": "sc", "B": "ours" },
+    "outputs_a": ["https://picsum.photos/seed/table_sc_a/500/400"],
+    "outputs_b": ["https://picsum.photos/seed/table_ours_b/500/400"],
+    "ref_a": "https://picsum.photos/seed/marble_white/160/160",
+    "ref_b": "https://picsum.photos/seed/brushed_steel/160/160",
+    "prompt": "A dining table with marble top and brushed steel legs",
+    "ref_a_label": "tabletop (marble)",
+    "ref_b_label": "legs (brushed steel)"
+  },
+  {
+    "scene_id": "test_sofa",
+    "mapping": { "A": "ours", "B": "sf_global" },
+    "outputs_a": ["https://picsum.photos/seed/sofa_ours/500/400"],
+    "outputs_b": ["https://picsum.photos/seed/sofa_global/500/400"],
+    "ref_a": "https://picsum.photos/seed/dark_leather/160/160",
+    "ref_b": "https://picsum.photos/seed/linen_beige/160/160",
+    "prompt": "A sofa with dark leather frame and linen cushions",
+    "ref_a_label": "frame (dark leather)",
+    "ref_b_label": "cushions (linen)"
+  }
+]
