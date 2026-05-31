@@ -178,14 +178,14 @@ document.getElementById('survey-form').addEventListener('submit', async (e) => {
   };
 
   try {
-    // mode: 'no-cors' is required for Apps Script — we can't read the response
-    // body, but the POST goes through and the data is saved
+    const formData = new FormData();
+    formData.append('payload', JSON.stringify(payload));
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body:   JSON.stringify(payload),
+      body:   formData,   // no Content-Type header: browser sets it automatically
     });
+
     // small delay so it doesn't feel instant
     await new Promise(r => setTimeout(r, 300));
     loadNextTrial();
