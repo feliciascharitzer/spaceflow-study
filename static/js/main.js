@@ -1,6 +1,6 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────
 // Step 4: paste your Google Apps Script URL here after setting it up
-const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2cNxUfrOFzucSTNZd6DrSMSgnQdfetqnMxcnSyL0y1WHs0Kcgc-m4/exec";
 
 const STUDY_ID = "appearance";
 
