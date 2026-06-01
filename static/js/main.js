@@ -1,8 +1,8 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────
 // Step 4: paste your Google Apps Script URL here after setting it up
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2cNxUfrOFzucSTNZd6DrSMSgnQdfetqnMxcnSyL0y1WHs0Kcgc-m4/exec";
-
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2cNxUfrOFzucSTNZd6DrSMSgnQdfetqnMxcnSyL0y1WHs0Kcgc-m4/exec"
 const STUDY_ID = "appearance";
+const USERNAME_KEY = 'spaceflow_username'; // shared with landing page + tau study
 
 // How many trials each participant sees (picked randomly from all available)
 // Set to Infinity to show all trials
@@ -12,7 +12,10 @@ const TRIALS_PER_PARTICIPANT = 8;
 let trials = [];
 let trialIndex = 0;
 let currentTrial = null;
-let currentUsername = sessionStorage.getItem(`username_${STUDY_ID}`);
+// Check localStorage first (set by landing page), fall back to sessionStorage
+let currentUsername =
+  localStorage.getItem(USERNAME_KEY) ||
+  sessionStorage.getItem(`username_${STUDY_ID}`);
 
 // ── USERNAME MODAL ────────────────────────────────────────────────────────
 if (currentUsername) {
@@ -36,6 +39,7 @@ function submitUsername() {
     return;
   }
   sessionStorage.setItem(`username_${STUDY_ID}`, username);
+  localStorage.setItem(USERNAME_KEY, username); // share with other studies
   currentUsername = username;
   document.getElementById('display-username').textContent = username;
   hideModal();
@@ -117,47 +121,15 @@ function populateTrial(trial) {
 function fillOutputs(containerId, urls) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-  const altText = containerId === 'imgs-a' ? 'Sample A' : 'Sample B';
   urls.forEach(url => {
-    container.appendChild(createMediaElement(url, altText));
-  });
-}
-
-function createMediaElement(url, altText) {
-  const ext = url.split('.').pop().toLowerCase();
-
-  if (ext === 'glb' || ext === 'gltf') {
-    const mv = document.createElement('model-viewer');
-    mv.setAttribute('src', url);
-    mv.setAttribute('auto-rotate', '');
-    mv.setAttribute('camera-controls', '');
-    mv.setAttribute('alt', altText);
-    mv.setAttribute('shadow-intensity', '1');
-    mv.style.width  = '100%';
-    mv.style.height = '350px';
-    return mv;
-
-  } else if (ext === 'mp4' || ext === 'webm') {
-    const video = document.createElement('video');
-    video.src     = url;
-    video.autoplay = true;
-    video.loop    = true;
-    video.muted   = true;
-    video.playsInline = true;
-    video.style.width        = '100%';
-    video.style.borderRadius = '6px';
-    video.style.display      = 'block';
-    return video;
-
-  } else {
-    // PNG, JPG, WEBP etc.
     const img = document.createElement('img');
-    img.src     = url;
-    img.alt     = altText;
+    img.src = url;
+    img.alt = containerId === 'imgs-a' ? 'Sample A' : 'Sample B';
     img.className = 'model-image';
+    // lazy-load for performance
     img.loading = 'lazy';
-    return img;
-  }
+    container.appendChild(img);
+  });
 }
 
 function setSpan(id, value) {
@@ -210,12 +182,13 @@ document.getElementById('survey-form').addEventListener('submit', async (e) => {
   };
 
   try {
-    const params = new URLSearchParams({ 
-      data: JSON.stringify(payload) 
-    });
-    await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
-      method: 'GET',
+    // mode: 'no-cors' is required for Apps Script — we can't read the response
+    // body, but the POST goes through and the data is saved
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
       mode:   'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body:   JSON.stringify(payload),
     });
     // small delay so it doesn't feel instant
     await new Promise(r => setTimeout(r, 300));
@@ -248,7 +221,10 @@ function showCompletion() {
       <div class="completion-title">Study complete!</div>
       <div class="completion-text">
         Thank you for participating, <strong>${currentUsername}</strong>.<br>
-        Your responses have been saved. You can now close this tab.
+        Your responses have been saved.<br><br>
+        <a href="./index.html" style="color:var(--accent);font-weight:500;">
+          ← Back to study selection
+        </a>
       </div>
     </div>
   `;
