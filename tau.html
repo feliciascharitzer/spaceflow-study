@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpaceFlow — Geometric Control Study</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <script type="module" src="https://unpkg.com/@google/model-viewer@3.4.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+
+  <!-- ── USERNAME MODAL (shown only if coming directly, not via landing page) -->
+  <div id="username-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-logo">SpaceFlow</div>
+      <h2 class="modal-title">Geometric Control Study</h2>
+      <p class="modal-subtitle">
+        You will compare three 3D objects generated from the same geometric input
+        using different levels of shape control.
+      </p>
+      <input type="text" id="username-input" class="modal-input"
+             placeholder="Enter your name or any username" autocomplete="off">
+      <p class="modal-error" id="username-error"></p>
+      <button id="username-submit" class="btn btn-primary">Start Study →</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN STUDY ─────────────────────────────────────────────── -->
+  <div id="main-content" class="page" style="display:none;" data-study-id="tau_control">
+
+    <header class="study-header">
+      <div class="study-header-left">
+        <a href="./index.html" class="back-link">← All Studies</a>
+        <span class="study-name">SpaceFlow &mdash; Local Geometric Control</span>
+      </div>
+      <div class="study-header-right">
+        <span class="participant-label">Participant: <strong id="display-username"></strong></span>
+      </div>
+    </header>
+
+    <div class="progress-wrap">
+      <div class="progress-text" id="progress-text">Loading…</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Task description -->
+    <div class="task-card">
+      <div class="task-instruction">
+        We start from an input geometric shape (shown below). The <strong
+        style="color:#E07B39;">orange region</strong> is intended to be
+        free-form — the method should ignore its exact shape and generate
+        something natural there. The blue regions are meant to be geometrically
+        precise. Three methods with different control strategies produced the
+        samples below.
+        <strong>Judge each question independently.</strong>
+      </div>
+      <div class="prompt-row">
+        <span class="prompt-label">Prompt</span>
+        <span class="prompt-text" id="prompt-box">—</span>
+      </div>
+    </div>
+
+    <!-- Single reference image (SQ prior) -->
+    <div class="references-section">
+      <div class="section-label">Input Geometric Shape</div>
+      <div class="tau-reference-row">
+        <div class="tau-reference-card">
+          <img id="ref-img" src="" alt="Input shape" class="tau-reference-img">
+          <div class="reference-tag">
+            Superquadric prior —
+            <span style="color:#2B5BE8; font-weight:600;">blue = high control</span>,
+            <span style="color:#E07B39; font-weight:600;">orange = free-form</span>
+          </div>
+        </div>
+        <div class="tau-reference-desc">
+          <div class="ref-desc-title">What to look for</div>
+          <ul class="ref-desc-list">
+            <li><strong id="rigid-part-label">Rigid part</strong> — should match the blue shape precisely</li>
+            <li><strong id="free-part-label">Free-form part</strong> — should look natural, <em>not</em> like the orange shape</li>
+            <li>Both parts together should look like a cohesive, realistic object</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Three output samples -->
+    <div class="outputs-section-3col">
+      <div class="output-col">
+        <div class="output-label">Sample A</div>
+        <div id="imgs-a" class="output-images"></div>
+      </div>
+      <div class="output-col">
+        <div class="output-label">Sample B</div>
+        <div id="imgs-b" class="output-images"></div>
+      </div>
+      <div class="output-col">
+        <div class="output-label">Sample C</div>
+        <div id="imgs-c" class="output-images"></div>
+      </div>
+    </div>
+
+    <!-- Hidden tracking spans -->
+    <span id="scene"            style="display:none"></span>
+    <span id="model_a_method"   style="display:none"></span>
+    <span id="model_b_method"   style="display:none"></span>
+    <span id="model_c_method"   style="display:none"></span>
+
+    <!-- Questions (3 choices each) -->
+    <div class="survey-section">
+      <form id="survey-form">
+
+        <div class="question">
+          <div class="question-text">
+            Q1 — Which sample's <em id="q1-rigid">rigid part</em>
+            most faithfully matches the <strong>blue region</strong> of the input shape?
+          </div>
+          <div class="choices">
+            <label class="choice-label"><input type="radio" name="q1" value="Model A" required><span class="choice-btn">Sample A</span></label>
+            <label class="choice-label"><input type="radio" name="q1" value="Model B"><span class="choice-btn">Sample B</span></label>
+            <label class="choice-label"><input type="radio" name="q1" value="Model C"><span class="choice-btn">Sample C</span></label>
+            <label class="choice-label"><input type="radio" name="q1" value="Equal"><span class="choice-btn">No difference</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="question-text">
+            Q2 — Which sample's <em id="q2-free">free-form part</em>
+            looks most <strong>natural and realistic</strong>
+            (ignoring the orange shape — it should <em>not</em> look like it)?
+          </div>
+          <div class="choices">
+            <label class="choice-label"><input type="radio" name="q2" value="Model A" required><span class="choice-btn">Sample A</span></label>
+            <label class="choice-label"><input type="radio" name="q2" value="Model B"><span class="choice-btn">Sample B</span></label>
+            <label class="choice-label"><input type="radio" name="q2" value="Model C"><span class="choice-btn">Sample C</span></label>
+            <label class="choice-label"><input type="radio" name="q2" value="Equal"><span class="choice-btn">No difference</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="question-text">
+            Q3 — Which sample do you <strong>prefer overall</strong>,
+            considering both geometric accuracy and visual quality?
+          </div>
+          <div class="choices">
+            <label class="choice-label"><input type="radio" name="q3" value="Model A" required><span class="choice-btn">Sample A</span></label>
+            <label class="choice-label"><input type="radio" name="q3" value="Model B"><span class="choice-btn">Sample B</span></label>
+            <label class="choice-label"><input type="radio" name="q3" value="Model C"><span class="choice-btn">Sample C</span></label>
+            <label class="choice-label"><input type="radio" name="q3" value="Equal"><span class="choice-btn">No difference</span></label>
+          </div>
+        </div>
+
+        <div id="form-error" class="form-error" style="display:none">
+          Please answer all three questions before submitting.
+        </div>
+
+        <button type="submit" class="btn btn-submit" id="submit-btn">
+          Submit &amp; Next →
+        </button>
+      </form>
+
+      <div id="message" class="message" style="display:none"></div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <script src="./static/js/main_tau.js?v=1"></script>
+</body>
+</html>
