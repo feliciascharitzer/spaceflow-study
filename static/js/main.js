@@ -117,15 +117,47 @@ function populateTrial(trial) {
 function fillOutputs(containerId, urls) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+  const altText = containerId === 'imgs-a' ? 'Sample A' : 'Sample B';
   urls.forEach(url => {
-    const img = document.createElement('img');
-    img.src = url;
-    img.alt = containerId === 'imgs-a' ? 'Sample A' : 'Sample B';
-    img.className = 'model-image';
-    // lazy-load for performance
-    img.loading = 'lazy';
-    container.appendChild(img);
+    container.appendChild(createMediaElement(url, altText));
   });
+}
+
+function createMediaElement(url, altText) {
+  const ext = url.split('.').pop().toLowerCase();
+
+  if (ext === 'glb' || ext === 'gltf') {
+    const mv = document.createElement('model-viewer');
+    mv.setAttribute('src', url);
+    mv.setAttribute('auto-rotate', '');
+    mv.setAttribute('camera-controls', '');
+    mv.setAttribute('alt', altText);
+    mv.setAttribute('shadow-intensity', '1');
+    mv.style.width  = '100%';
+    mv.style.height = '350px';
+    return mv;
+
+  } else if (ext === 'mp4' || ext === 'webm') {
+    const video = document.createElement('video');
+    video.src     = url;
+    video.autoplay = true;
+    video.loop    = true;
+    video.muted   = true;
+    video.playsInline = true;
+    video.style.width        = '100%';
+    video.style.borderRadius = '6px';
+    video.style.display      = 'block';
+    return video;
+
+  } else {
+    // PNG, JPG, WEBP etc.
+    const img = document.createElement('img');
+    img.src     = url;
+    img.alt     = altText;
+    img.className = 'model-image';
+    img.loading = 'lazy';
+    return img;
+  }
 }
 
 function setSpan(id, value) {
@@ -178,14 +210,13 @@ document.getElementById('survey-form').addEventListener('submit', async (e) => {
   };
 
   try {
-    const formData = new FormData();
-    formData.append('payload', JSON.stringify(payload));
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      body:   formData,   // no Content-Type header: browser sets it automatically
+    const params = new URLSearchParams({ 
+      data: JSON.stringify(payload) 
     });
-
+    await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+      method: 'GET',
+      mode:   'no-cors',
+    });
     // small delay so it doesn't feel instant
     await new Promise(r => setTimeout(r, 300));
     loadNextTrial();

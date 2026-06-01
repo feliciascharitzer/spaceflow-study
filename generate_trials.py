@@ -78,8 +78,16 @@ def generate():
                 issues.append(f"metadata.json missing keys: {missing}")
 
         # ── check reference images ────────────────────────────────────
-        ref_a = scene_path / "reference_a.webp"
-        ref_b = scene_path / "reference_b.webp"
+        def find_reference(scene_path, name):
+            for ext in ['.webp', '.png', '.jpg', '.jpeg']:
+                p = scene_path / f"{name}{ext}"
+                if p.exists():
+                    return p
+            return None
+
+        ref_a = find_reference(scene_path, "reference_a")
+        ref_b = find_reference(scene_path, "reference_b")
+
         if not ref_a.exists():
             issues.append("missing reference_a.webp")
         if not ref_b.exists():
