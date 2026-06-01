@@ -52,10 +52,10 @@
     <div class="task-card">
       <div class="task-instruction">
         We start from an input geometric shape (shown below). The <strong
-        style="color:#E07B39;">orange region</strong> is intended to be
-        free-form — the method should ignore its exact shape and generate
-        something natural there. The blue regions are meant to be geometrically
-        precise. Three methods with different control strategies produced the
+        style="color:#E07B39;">orange regions</strong> have high geometric
+        control — the generated object should closely follow their shape.
+        The white/grey regions are free-form — the method can generate
+        something natural there. Three methods with different control strategies produced the
         samples below.
         <strong>Judge each question independently.</strong>
       </div>
@@ -72,18 +72,10 @@
         <div class="tau-reference-card">
           <img id="ref-img" src="" alt="Input shape" class="tau-reference-img">
           <div class="reference-tag">
-            Superquadric prior —
-            <span style="color:#2B5BE8; font-weight:600;">blue = high control</span>,
-            <span style="color:#E07B39; font-weight:600;">orange = free-form</span>
+            Input shape:
+            <span style="color:#2B5BE8; font-weight:600;">orange = high geometric control</span>,
+            <span style="color:#E07B39; font-weight:600;">white/grey = free-form region</span>
           </div>
-        </div>
-        <div class="tau-reference-desc">
-          <div class="ref-desc-title">What to look for</div>
-          <ul class="ref-desc-list">
-            <li><strong id="rigid-part-label">Rigid part</strong> — should match the blue shape precisely</li>
-            <li><strong id="free-part-label">Free-form part</strong> — should look natural, <em>not</em> like the orange shape</li>
-            <li>Both parts together should look like a cohesive, realistic object</li>
-          </ul>
         </div>
       </div>
     </div>

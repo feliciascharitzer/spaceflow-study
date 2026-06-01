@@ -76,8 +76,10 @@ function populateTrial(trial) {
   // Update part labels in instructions + questions
   const rigidLabel = trial.rigid_part || 'rigid part';
   const freeLabel  = trial.free_part  || 'free-form part';
-  document.getElementById('rigid-part-label').textContent = rigidLabel;
-  document.getElementById('free-part-label').textContent  = freeLabel;
+  if (document.getElementById('rigid-part-label'))
+    document.getElementById('rigid-part-label').textContent = rigidLabel;
+  if (document.getElementById('free-part-label'))
+    document.getElementById('free-part-label').textContent  = freeLabel;
   document.getElementById('q1-rigid').textContent = rigidLabel;
   document.getElementById('q2-free').textContent  = freeLabel;
 
