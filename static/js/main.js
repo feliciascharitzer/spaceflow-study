@@ -1,5 +1,5 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE"; // ← paste your URL here
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2cNxUfrOFzucSTNZd6DrSMSgnQdfetqnMxcnSyL0y1WHs0Kcgc-m4/exec"; // ← paste your URL here
 
 const STUDY_ID        = "appearance";
 const USERNAME_KEY    = 'spaceflow_username'; // shared with landing page + tau study
