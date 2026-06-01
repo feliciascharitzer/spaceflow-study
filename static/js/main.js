@@ -1,18 +1,14 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────
-// Step 4: paste your Google Apps Script URL here after setting it up
-const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE"; // ← paste your URL here
 
-const STUDY_ID = "appearance";
-const USERNAME_KEY = 'spaceflow_username'; // shared with landing page + tau study
-
-// How many trials each participant sees (picked randomly from all available)
-// Set to Infinity to show all trials
+const STUDY_ID        = "appearance";
+const USERNAME_KEY    = 'spaceflow_username'; // shared with landing page + tau study
 const TRIALS_PER_PARTICIPANT = 8;
 
 // ── STATE ─────────────────────────────────────────────────────────────────
-let trials = [];
-let trialIndex = 0;
-let currentTrial = null;
+let trials        = [];
+let trialIndex    = 0;
+let currentTrial  = null;
 // Check localStorage first (set by landing page), fall back to sessionStorage
 let currentUsername =
   localStorage.getItem(USERNAME_KEY) ||
@@ -23,7 +19,7 @@ if (currentUsername) {
   hideModal();
   initStudy();
 } else {
-  document.getElementById('username-modal').style.display = 'flex'; // show only if needed
+  document.getElementById('username-modal').style.display = 'flex';
 }
 
 document.getElementById('username-submit').addEventListener('click', submitUsername);
@@ -32,15 +28,15 @@ document.getElementById('username-input').addEventListener('keypress', e => {
 });
 
 function submitUsername() {
-  const input = document.getElementById('username-input');
+  const input    = document.getElementById('username-input');
   const errorDiv = document.getElementById('username-error');
   const username = input.value.trim();
   if (!username) {
     errorDiv.textContent = 'Please enter a name to continue.';
     return;
   }
+  localStorage.setItem(USERNAME_KEY, username);
   sessionStorage.setItem(`username_${STUDY_ID}`, username);
-  localStorage.setItem(USERNAME_KEY, username); // share with other studies
   currentUsername = username;
   document.getElementById('display-username').textContent = username;
   hideModal();
@@ -49,7 +45,7 @@ function submitUsername() {
 
 function hideModal() {
   document.getElementById('username-modal').style.display = 'none';
-  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('main-content').style.display  = 'block';
   document.getElementById('display-username').textContent = currentUsername || '';
 }
 
@@ -59,10 +55,8 @@ async function initStudy() {
     const res = await fetch('./trials.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const allTrials = await res.json();
-
-    // shuffle all trials, then take a subset for this participant
-    const shuffled = [...allTrials].sort(() => Math.random() - 0.5);
-    trials = shuffled.slice(0, Math.min(TRIALS_PER_PARTICIPANT, shuffled.length));
+    const shuffled  = [...allTrials].sort(() => Math.random() - 0.5);
+    trials     = shuffled.slice(0, Math.min(TRIALS_PER_PARTICIPANT, shuffled.length));
     trialIndex = 0;
     loadNextTrial();
   } catch (err) {
@@ -73,70 +67,84 @@ async function initStudy() {
 
 // ── LOAD TRIAL ────────────────────────────────────────────────────────────
 function loadNextTrial() {
-  if (trialIndex >= trials.length) {
-    showCompletion();
-    return;
-  }
-
-  currentTrial = trials[trialIndex];
-  trialIndex++;
-
+  if (trialIndex >= trials.length) { showCompletion(); return; }
+  currentTrial = trials[trialIndex++];
   updateProgress();
   populateTrial(currentTrial);
 }
 
 function populateTrial(trial) {
-  // prompt
   document.getElementById('prompt-box').textContent = trial.prompt || '—';
 
-  // reference images + labels
-  document.getElementById('ref-a-img').src = trial.ref_a;
-  document.getElementById('ref-b-img').src = trial.ref_b;
+  document.getElementById('ref-a-img').src          = trial.ref_a;
+  document.getElementById('ref-b-img').src          = trial.ref_b;
   document.getElementById('ref-a-label').textContent = `Reference A: ${trial.ref_a_label}`;
   document.getElementById('ref-b-label').textContent = `Reference B: ${trial.ref_b_label}`;
+  document.getElementById('q1-part').textContent     = trial.ref_a_label;
+  document.getElementById('q2-part').textContent     = trial.ref_b_label;
 
-  // update Q1 and Q2 text with the part labels
-  document.getElementById('q1-part').textContent = trial.ref_a_label;
-  document.getElementById('q2-part').textContent = trial.ref_b_label;
-
-  // method output images
   fillOutputs('imgs-a', trial.outputs_a);
   fillOutputs('imgs-b', trial.outputs_b);
 
-  // hidden tracking fields
   setSpan('scene',          trial.scene_id);
   setSpan('model_a_method', trial.mapping.A);
   setSpan('model_b_method', trial.mapping.B);
 
-  // reset form state
   document.querySelectorAll('#survey-form input[type="radio"]')
           .forEach(r => r.checked = false);
   document.getElementById('form-error').style.display = 'none';
-  document.getElementById('message').style.display = 'none';
+  document.getElementById('message').style.display    = 'none';
 
   const btn = document.getElementById('submit-btn');
-  btn.disabled = false;
+  btn.disabled    = false;
   btn.textContent = 'Submit & Next →';
 }
 
+// ── MEDIA HELPERS ─────────────────────────────────────────────────────────
 function fillOutputs(containerId, urls) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-  urls.forEach(url => {
-    const img = document.createElement('img');
-    img.src = url;
-    img.alt = containerId === 'imgs-a' ? 'Sample A' : 'Sample B';
+  const altText = containerId === 'imgs-a' ? 'Sample A' : 'Sample B';
+  (urls || []).forEach(url => container.appendChild(createMediaElement(url, altText)));
+}
+
+function createMediaElement(url, altText) {
+  const ext = url.split('.').pop().toLowerCase();
+
+  if (ext === 'glb' || ext === 'gltf') {
+    const mv = document.createElement('model-viewer');
+    mv.setAttribute('src', url);
+    mv.setAttribute('auto-rotate', '');
+    mv.setAttribute('camera-controls', '');
+    mv.setAttribute('alt', altText);
+    mv.setAttribute('shadow-intensity', '1');
+    mv.style.width  = '100%';
+    mv.style.height = '350px';
+    return mv;
+
+  } else if (ext === 'mp4' || ext === 'webm') {
+    const video = document.createElement('video');
+    video.src         = url;
+    video.autoplay    = true;
+    video.loop        = true;
+    video.muted       = true;
+    video.playsInline = true;
+    video.style.cssText = 'width:100%;border-radius:6px;display:block;';
+    return video;
+
+  } else {
+    const img     = document.createElement('img');
+    img.src       = url;
+    img.alt       = altText;
     img.className = 'model-image';
-    // lazy-load for performance
-    img.loading = 'lazy';
-    container.appendChild(img);
-  });
+    img.loading   = 'lazy';
+    return img;
+  }
 }
 
 function setSpan(id, value) {
-  const el = document.getElementById(id);
+  const el       = document.getElementById(id);
   el.textContent = value;
-  // also set value attribute so we can read it on submit
   el.dataset.value = value;
 }
 
@@ -152,11 +160,10 @@ function updateProgress() {
 document.getElementById('survey-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // collect answers
   const answers = {};
   let allAnswered = true;
   document.querySelectorAll('#survey-form .question').forEach((qDiv, idx) => {
-    const name = `q${idx + 1}`;
+    const name    = `q${idx + 1}`;
     const checked = qDiv.querySelector(`input[name="${name}"]:checked`);
     answers[name] = checked ? checked.value : null;
     if (!checked) allAnswered = false;
@@ -169,54 +176,47 @@ document.getElementById('survey-form').addEventListener('submit', async (e) => {
   document.getElementById('form-error').style.display = 'none';
 
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = 'Saving…';
 
   const payload = {
-    study_id:      STUDY_ID,
-    username:      currentUsername,
-    scene_id:      document.getElementById('scene').dataset.value,
-    model_a_name:  document.getElementById('model_a_method').dataset.value,
-    model_b_name:  document.getElementById('model_b_method').dataset.value,
+    study_id:     STUDY_ID,
+    username:     currentUsername,
+    scene_id:     document.getElementById('scene').dataset.value,
+    model_a_name: document.getElementById('model_a_method').dataset.value,
+    model_b_name: document.getElementById('model_b_method').dataset.value,
     answers,
-    timestamp:     new Date().toISOString(),
+    timestamp:    new Date().toISOString(),
   };
 
   try {
-    // mode: 'no-cors' is required for Apps Script — we can't read the response
-    // body, but the POST goes through and the data is saved
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
+    const params = new URLSearchParams({ data: JSON.stringify(payload) });
+    await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+      method: 'GET',
       mode:   'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body:   JSON.stringify(payload),
     });
-    // small delay so it doesn't feel instant
     await new Promise(r => setTimeout(r, 300));
     loadNextTrial();
   } catch (err) {
     console.error('Submit error:', err);
-    showMessage('Error saving response — please check your connection and try again.', true);
-    btn.disabled = false;
+    showMessage('Error saving — please check your connection and try again.', true);
+    btn.disabled    = false;
     btn.textContent = 'Submit & Next →';
   }
 });
 
 // ── COMPLETION ────────────────────────────────────────────────────────────
 function showCompletion() {
-  // fill the progress bar to 100%
   document.getElementById('progress-fill').style.width = '100%';
   document.getElementById('progress-text').textContent =
     `${trials.length} of ${trials.length} — Complete`;
 
-  // hide study content
-  document.querySelector('.task-card').style.display = 'none';
+  document.querySelector('.task-card').style.display        = 'none';
   document.querySelector('.references-section').style.display = 'none';
-  document.querySelector('.outputs-section').style.display = 'none';
-  document.querySelector('.survey-section').style.display = 'none';
+  document.querySelector('.outputs-section').style.display  = 'none';
+  document.querySelector('.survey-section').style.display   = 'none';
 
-  // show completion message
-  const completionHtml = `
+  document.querySelector('.page').insertAdjacentHTML('beforeend', `
     <div class="completion-card">
       <div class="completion-emoji">🎉</div>
       <div class="completion-title">Study complete!</div>
@@ -228,13 +228,12 @@ function showCompletion() {
         </a>
       </div>
     </div>
-  `;
-  document.querySelector('.page').insertAdjacentHTML('beforeend', completionHtml);
+  `);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function showMessage(msg, isError = false) {
-  const box = document.getElementById('message');
+  const box     = document.getElementById('message');
   box.className = 'message ' + (isError ? 'error' : 'success');
   box.textContent = msg;
   box.style.display = 'block';
