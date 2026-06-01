@@ -1,5 +1,5 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2cNxUfrOFzucSTNZd6DrSMSgnQdfetqnMxcnSyL0y1WHs0Kcgc-m4/exec";
+const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE"; // same URL as appearance study
 
 const STUDY_ID = "tau_control";
 const TRIALS_PER_PARTICIPANT = 6;
@@ -17,7 +17,7 @@ if (currentUsername) {
   hideModal();
   initStudy();
 } else {
-  document.getElementById('username-modal').style.display = 'flex';
+  document.getElementById('username-modal').style.display = 'flex'; // show only if needed
 }
 
 document.getElementById('username-submit').addEventListener('click', submitUsername);
