@@ -52,9 +52,9 @@
     <div class="task-card">
       <div class="task-instruction">
         We start from an input geometric shape (shown below). The <strong
-        style="color:#E07B39;">orange regions</strong> have high geometric
+        style="color:#ac6f0c;">orange regions</strong> have high geometric
         control — the generated object should closely follow their shape.
-        The white/grey regions are free-form — the method can generate
+        The grey regions are free-form — the method can generate
         something natural there. Three methods with different control strategies produced the
         samples below.
         <strong>Judge each question independently.</strong>
@@ -68,14 +68,12 @@
     <!-- Single reference image (SQ prior) -->
     <div class="references-section">
       <div class="section-label">Input Geometric Shape</div>
-      <div class="tau-reference-row">
-        <div class="tau-reference-card">
-          <img id="ref-img" src="" alt="Input shape" class="tau-reference-img">
-          <div class="reference-tag">
-            Input shape:
-            <span style="color:#2B5BE8; font-weight:600;">orange = high geometric control</span>,
-            <span style="color:#E07B39; font-weight:600;">white/grey = free-form region</span>
-          </div>
+      <div class="tau-reference-card" style="width:fit-content">
+        <img id="ref-img" src="" alt="Input shape" class="tau-reference-img">
+        <div class="reference-tag">
+          Input shape:
+          <span style="color:#ac6f0c; font-weight:600;">orange = high geometric control</span>,
+          <span style="color:#8A8B8D; font-weight:600;">grey = free-form region</span>
         </div>
       </div>
     </div>
