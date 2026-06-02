@@ -473,17 +473,24 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
   box-shadow: var(--shadow);
   flex-shrink: 0;
 }
 
+.ref-img-wrap {
+  overflow: hidden;
+  border-radius: var(--radius) var(--radius) 0 0; /* round top corners only */
+  width: 350px;
+  height: 350px;
+}
+
 .tau-reference-img {
   display: block;
-  width: 220px;
-  height: 220px;
+  width: 350px;
+  height: 350px;
   object-fit: contain;
   background: #f0f0ed;
+  transform: scale(1.5);
 }
 
 .tau-reference-desc {
