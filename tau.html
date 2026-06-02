@@ -54,9 +54,9 @@
         In this task, a model generates a 3D asset from a text prompt and an
         input geometric shape, shown below. The input shape is divided into two
         control regions. <strong style="color:#E07B39;">Orange regions</strong>
-        are strongly controlled — the generated object should stay close to their
-        shape and placement. <strong>Grey regions</strong> are weakly controlled —
-        the model may modify them freely to match the prompt and produce natural
+        are strongly controlled, so the generated object should stay close to their
+        shape and placement, while still allowing small adjustments. <strong>Grey regions</strong> are weakly controlled, 
+        so the model may modify them freely to match the prompt and produce natural
         geometry. A good result should both match the prompt and preserve the
         intended structure in the orange regions.
       </div>
@@ -72,9 +72,7 @@
       <div class="tau-reference-card" style="width:fit-content">
         <img id="ref-img" src="" alt="Input shape" class="tau-reference-img">
         <div class="reference-tag">
-          Input shape —
-          <span style="color:#E07B39; font-weight:600;">orange = high geometric control</span>,
-          white/grey = free-form region
+          <span style="color:#E07B39; font-weight:600;">orange = high geometric control</span>
         </div>
       </div>
     </div>
