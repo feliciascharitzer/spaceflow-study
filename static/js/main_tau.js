@@ -1,9 +1,9 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2cNxUfrOFzucSTNZd6DrSMSgnQdfetqnMxcnSyL0y1WHs0Kcgc-m4/exec"; // same URL as appearance study
 
-const STUDY_ID         = "tau_control";
-const USERNAME_KEY     = 'spaceflow_username';
-const TRIALS_PER_PARTICIPANT = 10; // 10 scenes × 3 pairs = 30 total; show 10
+const STUDY_ID             = "tau_control";
+const USERNAME_KEY         = 'spaceflow_username';
+const TRIALS_PER_PAIR_TYPE  = 4; // 4 scenes per pair type → 12 trials total (~20 min)
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let trials        = [];
@@ -48,9 +48,20 @@ async function initStudy() {
   try {
     const res = await fetch('./trials_tau.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const all      = await res.json();
-    const shuffled = [...all].sort(() => Math.random() - 0.5);
-    trials     = shuffled.slice(0, Math.min(TRIALS_PER_PARTICIPANT, shuffled.length));
+    const all = await res.json();
+
+    // Stratified sampling: pick TRIALS_PER_PAIR_TYPE trials from each pair type
+    // so every participant sees all three comparisons (ours vs high, ours vs low, high vs low)
+    const byPair = {};
+    all.forEach(t => {
+      const key = [t.mapping.A, t.mapping.B].sort().join('_vs_');
+      (byPair[key] = byPair[key] || []).push(t);
+    });
+
+    trials = Object.values(byPair)
+      .flatMap(group => group.sort(() => Math.random() - 0.5).slice(0, TRIALS_PER_PAIR_TYPE))
+      .sort(() => Math.random() - 0.5); // shuffle the combined set
+
     trialIndex = 0;
     loadNextTrial();
   } catch (err) {
