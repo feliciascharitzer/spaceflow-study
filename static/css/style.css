@@ -490,7 +490,6 @@ body {
   height: 350px;
   object-fit: contain;
   background: #f0f0ed;
-  transform: scale(1.5);
 }
 
 .tau-reference-desc {
