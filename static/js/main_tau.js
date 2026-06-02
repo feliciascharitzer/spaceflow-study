@@ -15,7 +15,6 @@ let currentUsername =
 // ── USERNAME ──────────────────────────────────────────────────────────────
 if (currentUsername) {
   hideModal();
-  initStudy();
 } else {
   document.getElementById('username-modal').style.display = 'flex';
 }
@@ -23,6 +22,10 @@ if (currentUsername) {
 document.getElementById('username-submit').addEventListener('click', submitUsername);
 document.getElementById('username-input').addEventListener('keypress', e => {
   if (e.key === 'Enter') submitUsername();
+});
+document.getElementById('instruction-ready').addEventListener('click', () => {
+  document.getElementById('instruction-modal').style.display = 'none';
+  initStudy();
 });
 
 function submitUsername() {
@@ -34,11 +37,11 @@ function submitUsername() {
   sessionStorage.setItem(`username_${STUDY_ID}`, name);
   currentUsername = name;
   hideModal();
-  initStudy();
 }
 
 function hideModal() {
   document.getElementById('username-modal').style.display = 'none';
+  document.getElementById('instruction-modal').style.display = 'flex';
   document.getElementById('main-content').style.display   = 'block';
   document.getElementById('display-username').textContent  = currentUsername || '';
 }
