@@ -117,10 +117,10 @@ function createMediaElement(url, altText) {
     mv.setAttribute('camera-controls', '');
     mv.setAttribute('alt', altText);
     mv.setAttribute('shadow-intensity', '1');
+    mv.setAttribute('orientation', '-90deg 0deg 0deg'); // ← add this line
     mv.style.width  = '100%';
     mv.style.height = '350px';
     return mv;
-
   } else if (ext === 'mp4' || ext === 'webm') {
     const v = document.createElement('video');
     v.src = url; v.autoplay = true; v.loop = true;
