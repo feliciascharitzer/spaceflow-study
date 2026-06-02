@@ -1,12 +1,12 @@
 {
-    "1":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 1" },
-    "2":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 2" },
-    "3":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 3" },
-    "4":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 4" },
-    "5":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 5" },
-    "6":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 6" },
-    "7":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 7" },
-    "8":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 8" },
-    "9":  { "prompt": "FILL IN PROMPT FOR EXAMPLE 9" },
-    "10": { "prompt": "FILL IN PROMPT FOR EXAMPLE 10" }
-  }
+    "1":  { "prompt": "A chair" },
+    "2":  { "prompt": "A bar chair" },
+    "3":  { "prompt": "A minimalist sofa" },
+    "4":  { "prompt": "A wooden toy of a person" },
+    "5":  { "prompt": "A chair" },
+    "6":  { "prompt": "A chair" },
+    "7":  { "prompt": "A stool with a pillow on top" },
+    "8":  { "prompt": "A low-poly elephant" },
+    "9":  { "prompt": "A plane" },
+    "10": { "prompt": "A classic chair" }
+}
