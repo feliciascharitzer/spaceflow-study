@@ -1,35 +1,29 @@
 [
   {
-    "scene_id":    "table_flower",
-    "mapping":     { "A": "local_tau", "B": "high_tau", "C": "low_tau" },
-    "outputs_a":   ["static/data/sofa/ours/output.glb"],
-    "outputs_b":   ["static/data/sofa/ours/output.glb"],
-    "outputs_c":   ["static/data/sofa/ours/output.glb"],
-    "ref":         "static/data/sofa/chair_sq.png",
-    "prompt":      "A white sofa with a patterned backrest",
-    "rigid_part":  "table",
-    "free_part":   "flower"
+    "scene_id":  "test_chair",
+    "pair":      "local_tau_vs_tau_10",
+    "mapping":   { "A": "local_tau", "B": "tau_10" },
+    "outputs_a": ["https://picsum.photos/seed/tau_local_a/500/400"],
+    "outputs_b": ["https://picsum.photos/seed/tau_high_b/500/400"],
+    "ref":       "https://picsum.photos/seed/sq_chair/300/300",
+    "prompt":    "A wooden chair with a cushioned seat"
   },
   {
-    "scene_id":    "chair_cushion",
-    "mapping":     { "A": "high_tau", "B": "local_tau", "C": "low_tau" },
-    "outputs_a":   ["static/data/sofa/ours/output.glb"],
-    "outputs_b":   ["static/data/sofa/ours/output.glb"],
-    "outputs_c":   ["static/data/sofa/ours/output.glb"],
-    "ref":         "static/data/sofa/chair_sq.png",
-    "prompt":      "A white sofa with a patterned backrest",
-    "rigid_part":  "legs",
-    "free_part":   "cushion"
+    "scene_id":  "test_chair",
+    "pair":      "local_tau_vs_tau_3",
+    "mapping":   { "A": "tau_3", "B": "local_tau" },
+    "outputs_a": ["https://picsum.photos/seed/tau_low_a/500/400"],
+    "outputs_b": ["https://picsum.photos/seed/tau_local_b/500/400"],
+    "ref":       "https://picsum.photos/seed/sq_chair/300/300",
+    "prompt":    "A wooden chair with a cushioned seat"
   },
   {
-    "scene_id":    "house_tree",
-    "mapping":     { "A": "low_tau", "B": "high_tau", "C": "local_tau" },
-    "outputs_a":   ["static/data/sofa/ours/output.glb"],
-    "outputs_b":   ["static/data/sofa/ours/output.glb"],
-    "outputs_c":   ["static/data/sofa/ours/output.glb"],
-    "ref":         "static/data/sofa/chair_sq.png",
-    "prompt":      "A white sofa with a patterned backrest",
-    "rigid_part":  "house",
-    "free_part":   "tree"
+    "scene_id":  "test_chair",
+    "pair":      "tau_10_vs_tau_3",
+    "mapping":   { "A": "tau_10", "B": "tau_3" },
+    "outputs_a": ["https://picsum.photos/seed/tau_high_c/500/400"],
+    "outputs_b": ["https://picsum.photos/seed/tau_low_c/500/400"],
+    "ref":       "https://picsum.photos/seed/sq_chair/300/300",
+    "prompt":    "A wooden chair with a cushioned seat"
   }
 ]

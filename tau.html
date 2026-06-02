@@ -12,17 +12,17 @@
 </head>
 <body>
 
-  <!-- ── USERNAME MODAL (shown only if coming directly, not via landing page) -->
+  <!-- ── USERNAME MODAL ─────────────────────────────────────────── -->
   <div id="username-modal" class="modal-overlay" style="display:none">
     <div class="modal-card">
       <div class="modal-logo">SpaceFlow</div>
       <h2 class="modal-title">Geometric Control Study</h2>
       <p class="modal-subtitle">
-        You will compare three 3D objects generated from the same geometric input
-        using different levels of shape control.
+        You will compare pairs of 3D objects generated from the same geometric
+        input, using different levels of shape control.
       </p>
       <input type="text" id="username-input" class="modal-input"
-             placeholder="Enter your name or any username" autocomplete="off">
+             placeholder="Enter any name or nickname" autocomplete="off">
       <p class="modal-error" id="username-error"></p>
       <button id="username-submit" class="btn btn-primary">Start Study →</button>
     </div>
@@ -34,7 +34,7 @@
     <header class="study-header">
       <div class="study-header-left">
         <a href="./index.html" class="back-link">← All Studies</a>
-        <span class="study-name">SpaceFlow &mdash; Local Geometric Control</span>
+        <span class="study-name">SpaceFlow — Local Geometric Control</span>
       </div>
       <div class="study-header-right">
         <span class="participant-label">Participant: <strong id="display-username"></strong></span>
@@ -51,13 +51,14 @@
     <!-- Task description -->
     <div class="task-card">
       <div class="task-instruction">
-        We start from an input geometric shape (shown below). The <strong
-        style="color:#ac6f0c;">orange regions</strong> have high geometric
-        control — the generated object should closely follow their shape.
-        The grey regions are free-form — the method can generate
-        something natural there. Three methods with different control strategies produced the
-        samples below.
-        <strong>Judge each question independently.</strong>
+        In this task, a model generates a 3D asset from a text prompt and an
+        input geometric shape, shown below. The input shape is divided into two
+        control regions. <strong style="color:#E07B39;">Orange regions</strong>
+        are strongly controlled — the generated object should stay close to their
+        shape and placement. <strong>Grey regions</strong> are weakly controlled —
+        the model may modify them freely to match the prompt and produce natural
+        geometry. A good result should both match the prompt and preserve the
+        intended structure in the orange regions.
       </div>
       <div class="prompt-row">
         <span class="prompt-label">Prompt</span>
@@ -65,19 +66,21 @@
       </div>
     </div>
 
-    <!-- Single reference image (SQ prior) -->
+    <!-- Single SQ prior reference -->
     <div class="references-section">
       <div class="section-label">Input Geometric Shape</div>
       <div class="tau-reference-card" style="width:fit-content">
         <img id="ref-img" src="" alt="Input shape" class="tau-reference-img">
         <div class="reference-tag">
-          <span style="color:#ac6f0c; font-weight:600;">orange = high geometric control</span>
+          Input shape —
+          <span style="color:#E07B39; font-weight:600;">orange = high geometric control</span>,
+          white/grey = free-form region
         </div>
       </div>
     </div>
 
-    <!-- Three output samples -->
-    <div class="outputs-section-3col">
+    <!-- A/B outputs (pairwise, same layout as appearance study) -->
+    <div class="outputs-section">
       <div class="output-col">
         <div class="output-label">Sample A</div>
         <div id="imgs-a" class="output-images"></div>
@@ -86,58 +89,49 @@
         <div class="output-label">Sample B</div>
         <div id="imgs-b" class="output-images"></div>
       </div>
-      <div class="output-col">
-        <div class="output-label">Sample C</div>
-        <div id="imgs-c" class="output-images"></div>
-      </div>
     </div>
 
     <!-- Hidden tracking spans -->
-    <span id="scene"            style="display:none"></span>
-    <span id="model_a_method"   style="display:none"></span>
-    <span id="model_b_method"   style="display:none"></span>
-    <span id="model_c_method"   style="display:none"></span>
+    <span id="scene"          style="display:none"></span>
+    <span id="model_a_method" style="display:none"></span>
+    <span id="model_b_method" style="display:none"></span>
 
-    <!-- Questions (3 choices each) -->
+    <!-- Questions -->
     <div class="survey-section">
       <form id="survey-form">
 
         <div class="question">
           <div class="question-text">
-            Q1 — Which sample's <em id="q1-rigid">rigid part</em>
-            most faithfully matches the <strong>orange region</strong> of the input shape?
+            Q1 — Which object better applies the intended control —
+            following the input shape where it is
+            <strong style="color:#E07B39;">orange</strong>,
+            and looking natural where it is grey?
           </div>
           <div class="choices">
             <label class="choice-label"><input type="radio" name="q1" value="Model A" required><span class="choice-btn">Sample A</span></label>
             <label class="choice-label"><input type="radio" name="q1" value="Model B"><span class="choice-btn">Sample B</span></label>
-            <label class="choice-label"><input type="radio" name="q1" value="Model C"><span class="choice-btn">Sample C</span></label>
             <label class="choice-label"><input type="radio" name="q1" value="Equal"><span class="choice-btn">No difference</span></label>
           </div>
         </div>
 
         <div class="question">
           <div class="question-text">
-            Q2 — Which sample's <em id="q2-free">free-form part</em>
-            looks most <strong>natural and realistic</strong>
-            (does not have to adhere to the grey geometric shape)?
+            Q2 — Which object looks more realistic?
           </div>
           <div class="choices">
             <label class="choice-label"><input type="radio" name="q2" value="Model A" required><span class="choice-btn">Sample A</span></label>
             <label class="choice-label"><input type="radio" name="q2" value="Model B"><span class="choice-btn">Sample B</span></label>
-            <label class="choice-label"><input type="radio" name="q2" value="Model C"><span class="choice-btn">Sample C</span></label>
             <label class="choice-label"><input type="radio" name="q2" value="Equal"><span class="choice-btn">No difference</span></label>
           </div>
         </div>
 
         <div class="question">
           <div class="question-text">
-            Q3 — Which sample do you <strong>prefer overall</strong>,
-            considering both geometric accuracy and visual quality?
+            Q3 — Which object looks better overall?
           </div>
           <div class="choices">
             <label class="choice-label"><input type="radio" name="q3" value="Model A" required><span class="choice-btn">Sample A</span></label>
             <label class="choice-label"><input type="radio" name="q3" value="Model B"><span class="choice-btn">Sample B</span></label>
-            <label class="choice-label"><input type="radio" name="q3" value="Model C"><span class="choice-btn">Sample C</span></label>
             <label class="choice-label"><input type="radio" name="q3" value="Equal"><span class="choice-btn">No difference</span></label>
           </div>
         </div>
@@ -156,6 +150,6 @@
 
   </div><!-- /main-content -->
 
-  <script src="./static/js/main_tau.js?v=1"></script>
+  <script src="./static/js/main_tau.js?v=2"></script>
 </body>
 </html>
