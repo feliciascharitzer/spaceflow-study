@@ -3,7 +3,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDfs7_90-ses_2
 
 const STUDY_ID             = "tau_control";
 const USERNAME_KEY         = 'spaceflow_username';
-const TRIALS_PER_PAIR_TYPE  = 4; // 4 scenes per pair type → 12 trials total (~20 min)
+const SCENES_PER_PAIR = 5; // 5 scenes × 2 pair types = 10 trials per participant
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let trials        = [];
@@ -46,6 +46,18 @@ function hideModal() {
   document.getElementById('display-username').textContent  = currentUsername || '';
 }
 
+// deterministic shuffle based on username
+function seededShuffle(arr, seed) {
+  const s = [...arr];
+  let h = [...seed].reduce((a, c) => Math.imul(31, a) + c.charCodeAt(0) | 0, 0);
+  for (let i = s.length - 1; i > 0; i--) {
+    h = Math.imul(h ^ h >>> 16, 0x45d9f3b);
+    const j = Math.abs(h) % (i + 1);
+    [s[i], s[j]] = [s[j], s[s]];
+  }
+  return s;
+}
+
 // ── STUDY INIT ────────────────────────────────────────────────────────────
 async function initStudy() {
   try {
@@ -53,17 +65,33 @@ async function initStudy() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const all = await res.json();
 
-    // Stratified sampling: pick TRIALS_PER_PAIR_TYPE trials from each pair type
-    // so every participant sees all three comparisons (ours vs high, ours vs low, high vs low)
-    const byPair = {};
-    all.forEach(t => {
-      const key = [t.mapping.A, t.mapping.B].sort().join('_vs_');
-      (byPair[key] = byPair[key] || []).push(t);
-    });
+    // Split into the two comparison types
+    const vsHigh = all.filter(t =>
+      (t.mapping.A === 'local_tau' || t.mapping.B === 'local_tau') &&
+      (t.mapping.A === 'tau_10'    || t.mapping.B === 'tau_10')
+    );
+    const vsLow = all.filter(t =>
+      (t.mapping.A === 'local_tau' || t.mapping.B === 'local_tau') &&
+      (t.mapping.A === 'tau_3'     || t.mapping.B === 'tau_3')
+    );
 
-    trials = Object.values(byPair)
-      .flatMap(group => group.sort(() => Math.random() - 0.5).slice(0, TRIALS_PER_PAIR_TYPE))
-      .sort(() => Math.random() - 0.5); // shuffle the combined set
+    // Shuffle all scenes, then split between pair types
+    // → no participant sees the same scene in both comparisons
+    const scenes = seededShuffle(
+      [...new Set(all.map(t => t.scene_id))],
+      currentUsername
+    );
+
+    const n             = Math.min(SCENES_PER_PAIR, Math.floor(scenes.length / 2));
+    const scenesForHigh = new Set(scenes.slice(0, n));
+    const scenesForLow  = new Set(scenes.slice(n, n * 2));
+
+    const selectedHigh = vsHigh.filter(t => scenesForHigh.has(t.scene_id));
+    const selectedLow  = vsLow.filter(t =>  scenesForLow.has(t.scene_id));
+
+    // Combine and shuffle so pair types are interleaved
+    trials = [...selectedHigh, ...selectedLow]
+      .sort(() => Math.random() - 0.5);
 
     trialIndex = 0;
     loadNextTrial();

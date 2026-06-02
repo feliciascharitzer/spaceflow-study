@@ -47,7 +47,6 @@ SQ_DIR       = DATA_ROOT / "sq_priors_images"
 PAIRS = [
     ("local_tau", "tau_10"),   # ours vs uniform high
     ("local_tau", "tau_3"),    # ours vs uniform low
-    ("tau_10",    "tau_3"),    # control: high vs low (proves tradeoff exists)
 ]
 
 # ── HELPERS ───────────────────────────────────────────────────────────────
